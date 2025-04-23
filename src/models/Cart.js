@@ -37,7 +37,7 @@ const Cart = sequelize.define('Cart', {
     timestamps: true
 });
 
-// Определяем связи
+// Define relationships
 User.hasMany(Cart, { foreignKey: 'userId' });
 Cart.belongsTo(User, { foreignKey: 'userId' });
 

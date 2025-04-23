@@ -4,7 +4,7 @@ const Cart = require('../models/Cart');
 const Product = require('../models/Product');
 const auth = require('../middleware/auth');
 
-// Получить корзину пользователя
+// Get user's cart
 router.get('/', auth, async (req, res) => {
     try {
         const cartItems = await Cart.findAll({
@@ -20,23 +20,23 @@ router.get('/', auth, async (req, res) => {
     }
 });
 
-// Добавить товар в корзину
+// Add item to cart
 router.post('/', auth, async (req, res) => {
     try {
         const { productId, quantity } = req.body;
 
-        // Проверка существования товара
+        // Check if product exists
         const product = await Product.findByPk(productId);
         if (!product) {
-            return res.status(404).json({ message: 'Товар не найден' });
+            return res.status(404).json({ message: 'Product not found' });
         }
 
-        // Проверка наличия товара
+        // Check product stock
         if (product.stock < quantity) {
-            return res.status(400).json({ message: 'Недостаточно товара на складе' });
+            return res.status(400).json({ message: 'Not enough stock available' });
         }
 
-        // Проверка существования товара в корзине
+        // Check if product is already in cart
         const existingCartItem = await Cart.findOne({
             where: {
                 userId: req.user.id,
@@ -45,13 +45,13 @@ router.post('/', auth, async (req, res) => {
         });
 
         if (existingCartItem) {
-            // Обновляем количество
+            // Update quantity
             existingCartItem.quantity += quantity;
             await existingCartItem.save();
             return res.json(existingCartItem);
         }
 
-        // Создаем новую запись в корзине
+        // Create new cart item
         const cartItem = await Cart.create({
             userId: req.user.id,
             productId,
@@ -64,7 +64,7 @@ router.post('/', auth, async (req, res) => {
     }
 });
 
-// Обновить количество товара в корзине
+// Update cart item quantity
 router.put('/:id', auth, async (req, res) => {
     try {
         const { quantity } = req.body;
@@ -77,12 +77,12 @@ router.put('/:id', auth, async (req, res) => {
         });
 
         if (!cartItem) {
-            return res.status(404).json({ message: 'Товар в корзине не найден' });
+            return res.status(404).json({ message: 'Cart item not found' });
         }
 
-        // Проверка наличия товара
+        // Check product stock
         if (cartItem.Product.stock < quantity) {
-            return res.status(400).json({ message: 'Недостаточно товара на складе' });
+            return res.status(400).json({ message: 'Not enough stock available' });
         }
 
         cartItem.quantity = quantity;
@@ -94,7 +94,7 @@ router.put('/:id', auth, async (req, res) => {
     }
 });
 
-// Удалить товар из корзины
+// Remove item from cart
 router.delete('/:id', auth, async (req, res) => {
     try {
         const cartItem = await Cart.findOne({
@@ -105,11 +105,11 @@ router.delete('/:id', auth, async (req, res) => {
         });
 
         if (!cartItem) {
-            return res.status(404).json({ message: 'Товар в корзине не найден' });
+            return res.status(404).json({ message: 'Cart item not found' });
         }
 
         await cartItem.destroy();
-        res.json({ message: 'Товар удален из корзины' });
+        res.json({ message: 'Item removed from cart' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

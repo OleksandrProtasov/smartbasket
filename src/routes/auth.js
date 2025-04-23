@@ -4,25 +4,25 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
 
-// Регистрация
+// Registration
 router.post('/register', async (req, res) => {
     try {
         const { email, password, name } = req.body;
 
-        // Проверка существования пользователя
+        // Check if user exists
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
-            return res.status(400).json({ message: 'Пользователь с таким email уже существует' });
+            return res.status(400).json({ message: 'User with this email already exists' });
         }
 
-        // Создание нового пользователя
+        // Create new user
         const user = await User.create({
             email,
             password,
             name
         });
 
-        // Создание токена
+        // Create token
         const token = jwt.sign(
             { userId: user.id },
             process.env.JWT_SECRET,
@@ -43,24 +43,24 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// Вход
+// Login
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Поиск пользователя
+        // Find user
         const user = await User.findOne({ where: { email } });
         if (!user) {
-            return res.status(401).json({ message: 'Неверный email или пароль' });
+            return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        // Проверка пароля
+        // Check password
         const isValidPassword = await user.comparePassword(password);
         if (!isValidPassword) {
-            return res.status(401).json({ message: 'Неверный email или пароль' });
+            return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        // Создание токена
+        // Create token
         const token = jwt.sign(
             { userId: user.id },
             process.env.JWT_SECRET,
@@ -81,7 +81,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// Получение информации о текущем пользователе
+// Get current user info
 router.get('/me', auth, async (req, res) => {
     try {
         const user = await User.findByPk(req.user.id, {

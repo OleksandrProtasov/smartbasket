@@ -46,7 +46,7 @@ const User = sequelize.define('User', {
     }
 });
 
-// Метод для проверки пароля
+// Method for password verification
 User.prototype.comparePassword = async function(candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password);
 };

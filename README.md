@@ -1,47 +1,47 @@
-# SmartBasket - Интернет-магазин
+# SmartBasket - Online Store
 
-Веб-приложение интернет-магазина с функционалом для пользователей и администраторов.
+Web application for an online store with functionality for users and administrators.
 
-## Технологии
+## Technologies
 
 - Backend: Node.js, Express, PostgreSQL, Sequelize
 - Frontend: React, TypeScript, Material-UI
-- Аутентификация: JWT
+- Authentication: JWT
 
-## Функционал
+## Features
 
-### Для пользователей:
-- Просмотр каталога товаров
-- Добавление товаров в корзину
-- Управление количеством товаров в корзине
-- Удаление товаров из корзины
+### For Users:
+- Browse product catalog
+- Add products to cart
+- Manage product quantities in cart
+- Remove products from cart
 
-### Для администраторов:
-- Управление товарами (добавление, редактирование, удаление)
-- Загрузка изображений товаров
-- Управление库存 (количеством товаров)
+### For Administrators:
+- Product management (add, edit, delete)
+- Upload product images
+- Manage inventory (product quantities)
 
-## Установка и запуск
+## Installation and Setup
 
-### Предварительные требования
-- Node.js (v14 или выше)
+### Prerequisites
+- Node.js (v14 or higher)
 - PostgreSQL
-- npm или yarn
+- npm or yarn
 
-### Установка
+### Installation
 
-1. Клонируйте репозиторий:
+1. Clone the repository:
 ```bash
 git clone https://github.com/your-username/smartbasket-app.git
 cd smartbasket-app
 ```
 
-2. Установите зависимости:
+2. Install dependencies:
 ```bash
 npm install
 ```
 
-3. Создайте файл .env в корневой директории и добавьте необходимые переменные окружения:
+3. Create a .env file in the root directory and add the necessary environment variables:
 ```
 PORT=5000
 DB_HOST=localhost
@@ -52,43 +52,43 @@ DB_PORT=5432
 JWT_SECRET=your_jwt_secret_key
 ```
 
-4. Создайте базу данных PostgreSQL:
+4. Create a PostgreSQL database:
 ```sql
 CREATE DATABASE smartbasket;
 ```
 
-### Запуск
+### Running the Application
 
-1. Запустите сервер:
+1. Start the server:
 ```bash
 npm run dev
 ```
 
-2. Откройте браузер и перейдите по адресу:
+2. Open your browser and navigate to:
 ```
 http://localhost:5000
 ```
 
 ## API Endpoints
 
-### Аутентификация
-- POST /api/auth/register - Регистрация нового пользователя
-- POST /api/auth/login - Вход в систему
-- GET /api/auth/me - Получение информации о текущем пользователе
+### Authentication
+- POST /api/auth/register - Register a new user
+- POST /api/auth/login - Login to the system
+- GET /api/auth/me - Get current user information
 
-### Товары
-- GET /api/products - Получение списка всех товаров
-- GET /api/products/:id - Получение информации о конкретном товаре
-- POST /api/products - Создание нового товара (только для админа)
-- PUT /api/products/:id - Обновление товара (только для админа)
-- DELETE /api/products/:id - Удаление товара (только для админа)
+### Products
+- GET /api/products - Get list of all products
+- GET /api/products/:id - Get information about a specific product
+- POST /api/products - Create a new product (admin only)
+- PUT /api/products/:id - Update a product (admin only)
+- DELETE /api/products/:id - Delete a product (admin only)
 
-### Корзина
-- GET /api/cart - Получение содержимого корзины
-- POST /api/cart - Добавление товара в корзину
-- PUT /api/cart/:id - Обновление количества товара в корзине
-- DELETE /api/cart/:id - Удаление товара из корзины
+### Cart
+- GET /api/cart - Get cart contents
+- POST /api/cart - Add a product to cart
+- PUT /api/cart/:id - Update product quantity in cart
+- DELETE /api/cart/:id - Remove a product from cart
 
-## Лицензия
+## License
 
 MIT 

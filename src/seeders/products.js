@@ -2,61 +2,53 @@ const Product = require('../models/Product');
 
 const products = [
   {
-    name: 'Яблоки',
-    description: 'Свежие яблоки из местного сада',
-    price: 2.99,
+    name: 'Smartphone',
+    description: 'Latest model with high performance',
+    price: 999.99,
     image: 'https://via.placeholder.com/300',
-    category: 'Фрукты',
-    stock: 100
-  },
-  {
-    name: 'Бананы',
-    description: 'Спелые бананы из тропиков',
-    price: 1.99,
-    image: 'https://via.placeholder.com/300',
-    category: 'Фрукты',
-    stock: 150
-  },
-  {
-    name: 'Морковь',
-    description: 'Свежая морковь с фермы',
-    price: 0.99,
-    image: 'https://via.placeholder.com/300',
-    category: 'Овощи',
-    stock: 200
-  },
-  {
-    name: 'Картофель',
-    description: 'Свежий картофель',
-    price: 1.49,
-    image: 'https://via.placeholder.com/300',
-    category: 'Овощи',
-    stock: 300
-  },
-  {
-    name: 'Молоко',
-    description: 'Свежее молоко',
-    price: 3.99,
-    image: 'https://via.placeholder.com/300',
-    category: 'Молочные продукты',
+    category: 'Electronics',
     stock: 50
   },
   {
-    name: 'Хлеб',
-    description: 'Свежий хлеб из пекарни',
-    price: 2.49,
+    name: 'Laptop',
+    description: 'Powerful laptop for work and entertainment',
+    price: 1499.99,
     image: 'https://via.placeholder.com/300',
-    category: 'Хлебобулочные изделия',
+    category: 'Electronics',
     stock: 30
+  },
+  {
+    name: 'Headphones',
+    description: 'Wireless headphones with noise cancellation',
+    price: 299.99,
+    image: 'https://via.placeholder.com/300',
+    category: 'Electronics',
+    stock: 100
+  },
+  {
+    name: 'Smart Watch',
+    description: 'Fitness tracker and smart notifications',
+    price: 199.99,
+    image: 'https://via.placeholder.com/300',
+    category: 'Electronics',
+    stock: 75
+  },
+  {
+    name: 'Tablet',
+    description: 'Portable device for work and entertainment',
+    price: 499.99,
+    image: 'https://via.placeholder.com/300',
+    category: 'Electronics',
+    stock: 40
   }
 ];
 
 const seedProducts = async () => {
   try {
     await Product.bulkCreate(products);
-    console.log('Продукты успешно добавлены в базу данных');
+    console.log('Products successfully added to the database');
   } catch (error) {
-    console.error('Ошибка при добавлении продуктов:', error);
+    console.error('Error adding products:', error);
   }
 };
 

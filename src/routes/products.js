@@ -6,7 +6,7 @@ const admin = require('../middleware/admin');
 const multer = require('multer');
 const path = require('path');
 
-// Настройка multer для загрузки изображений
+// Configure multer for image uploads
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads/');
@@ -32,7 +32,7 @@ const upload = multer({
     }
 });
 
-// Получить все продукты
+// Get all products
 router.get('/', async (req, res) => {
     try {
         const products = await Product.findAll();
@@ -42,12 +42,12 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Получить один продукт
+// Get one product
 router.get('/:id', async (req, res) => {
     try {
         const product = await Product.findByPk(req.params.id);
         if (!product) {
-            return res.status(404).json({ message: 'Продукт не найден' });
+            return res.status(404).json({ message: 'Product not found' });
         }
         res.json(product);
     } catch (error) {
@@ -55,7 +55,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Создать новый продукт (только для админа)
+// Create new product (admin only)
 router.post('/', [auth, admin, upload.single('image')], async (req, res) => {
     try {
         const { name, description, price, category, stock } = req.body;
@@ -76,12 +76,12 @@ router.post('/', [auth, admin, upload.single('image')], async (req, res) => {
     }
 });
 
-// Обновить продукт (только для админа)
+// Update product (admin only)
 router.put('/:id', [auth, admin, upload.single('image')], async (req, res) => {
     try {
         const product = await Product.findByPk(req.params.id);
         if (!product) {
-            return res.status(404).json({ message: 'Продукт не найден' });
+            return res.status(404).json({ message: 'Product not found' });
         }
 
         const { name, description, price, category, stock } = req.body;
@@ -102,16 +102,16 @@ router.put('/:id', [auth, admin, upload.single('image')], async (req, res) => {
     }
 });
 
-// Удалить продукт (только для админа)
+// Delete product (admin only)
 router.delete('/:id', [auth, admin], async (req, res) => {
     try {
         const product = await Product.findByPk(req.params.id);
         if (!product) {
-            return res.status(404).json({ message: 'Продукт не найден' });
+            return res.status(404).json({ message: 'Product not found' });
         }
 
         await product.destroy();
-        res.json({ message: 'Продукт удален' });
+        res.json({ message: 'Product deleted' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
