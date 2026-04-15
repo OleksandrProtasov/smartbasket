@@ -1,94 +1,104 @@
-# SmartBasket - Интернет-магазин
+# SmartBasket Mini Shop
 
-Веб-приложение интернет-магазина с функционалом для пользователей и администраторов.
+Современный мини интернет-магазин с backend на Express/PostgreSQL и frontend на Next.js.
 
-## Технологии
+## Стек
 
-- Backend: Node.js, Express, PostgreSQL, Sequelize
-- Frontend: React, TypeScript, Material-UI
-- Аутентификация: JWT
+- Backend: Node.js, Express, Sequelize, PostgreSQL, JWT
+- Frontend: Next.js (App Router), TypeScript, Tailwind CSS
+- Данные каталога: DummyJSON Products API + локальный fallback
+- Состояние клиента: React Query + Zustand
 
-## Функционал
+## Основные возможности
 
-### Для пользователей:
-- Просмотр каталога товаров
-- Добавление товаров в корзину
-- Управление количеством товаров в корзине
-- Удаление товаров из корзины
+- Каталог товаров с поиском, фильтрацией, сортировкой и пагинацией
+- Карточка товара с рекомендациями
+- Корзина с купонами и расчетом доставки
+- Wishlist и недавние просмотры
+- Регистрация/вход и demo checkout
+- Единый формат API-ответов и валидация query/body
 
-### Для администраторов:
-- Управление товарами (добавление, редактирование, удаление)
-- Загрузка изображений товаров
-- Управление库存 (количеством товаров)
+## Установка
 
-## Установка и запуск
+1) Установить зависимости backend:
 
-### Предварительные требования
-- Node.js (v14 или выше)
-- PostgreSQL
-- npm или yarn
-
-### Установка
-
-1. Клонируйте репозиторий:
-```bash
-git clone https://github.com/your-username/smartbasket-app.git
-cd smartbasket-app
-```
-
-2. Установите зависимости:
 ```bash
 npm install
 ```
 
-3. Создайте файл .env в корневой директории и добавьте необходимые переменные окружения:
-```
-PORT=5000
-DB_HOST=localhost
-DB_USER=postgres
-DB_PASSWORD=your_password
-DB_NAME=smartbasket
-DB_PORT=5432
-JWT_SECRET=your_jwt_secret_key
+2) Установить зависимости frontend:
+
+```bash
+cd frontend
+npm install
 ```
 
-4. Создайте базу данных PostgreSQL:
+3) Создать `.env` из `.env.example` в корне проекта.
+
+4) Создать БД:
+
 ```sql
 CREATE DATABASE smartbasket;
 ```
 
-### Запуск
+## Запуск
 
-1. Запустите сервер:
+Backend:
+
 ```bash
 npm run dev
 ```
 
-2. Откройте браузер и перейдите по адресу:
+Frontend (в отдельном терминале):
+
+```bash
+cd frontend
+npm run dev
 ```
-http://localhost:5000
+
+Доступ:
+
+- API: `http://localhost:5000`
+- Web: `http://localhost:3000`
+
+## Deploy
+
+### GitHub Pages (frontend)
+
+Frontend настроен на статический экспорт и автодеплой через GitHub Actions:
+
+- Workflow: `.github/workflows/deploy-frontend-gh-pages.yml`
+- В `Settings -> Pages` выберите `GitHub Actions`
+- В `Settings -> Secrets and variables -> Actions -> Variables` добавьте:
+  - `NEXT_PUBLIC_API_URL=https://<your-backend-domain>/api`
+
+После push в `master` сайт публикуется на GitHub Pages.
+
+### Backend (обязательно отдельно)
+
+GitHub Pages не запускает Node.js API, поэтому backend нужно деплоить на отдельный хост (Render/Railway/Fly.io).
+После деплоя backend укажите его URL в `NEXT_PUBLIC_API_URL` для frontend workflow.
+
+## Тесты
+
+Backend API:
+
+```bash
+npm test
 ```
 
-## API Endpoints
+Frontend smoke:
 
-### Аутентификация
-- POST /api/auth/register - Регистрация нового пользователя
-- POST /api/auth/login - Вход в систему
-- GET /api/auth/me - Получение информации о текущем пользователе
+```bash
+cd frontend
+npm run smoke
+```
 
-### Товары
-- GET /api/products - Получение списка всех товаров
-- GET /api/products/:id - Получение информации о конкретном товаре
-- POST /api/products - Создание нового товара (только для админа)
-- PUT /api/products/:id - Обновление товара (только для админа)
-- DELETE /api/products/:id - Удаление товара (только для админа)
+## Основные API маршруты
 
-### Корзина
-- GET /api/cart - Получение содержимого корзины
-- POST /api/cart - Добавление товара в корзину
-- PUT /api/cart/:id - Обновление количества товара в корзине
-- DELETE /api/cart/:id - Удаление товара из корзины
-
-## Лицензия
-
-MIT 
+- `GET /api/products` — каталог с query: `page`, `limit`, `q`, `category`, `sortBy`, `order`
+- `GET /api/products/categories` — категории
+- `GET /api/products/:id` — детальная карточка товара
+- `POST /api/auth/register` — регистрация
+- `POST /api/auth/login` — вход
+- `GET /api/cart` — корзина пользователя

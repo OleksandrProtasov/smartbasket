@@ -3,6 +3,9 @@ const router = express.Router();
 const Product = require('../models/Product');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
+const { validateProductQuery } = require('../middleware/validate');
+const { getProducts, getProductById, getCategories } = require('../services/productService');
+const { sendError, sendSuccess } = require('../utils/apiResponse');
 const multer = require('multer');
 const path = require('path');
 
@@ -32,26 +35,35 @@ const upload = multer({
     }
 });
 
-// Получить все продукты
-router.get('/', async (req, res) => {
+// Получить все продукты c пагинацией/фильтрами/сортировкой
+router.get('/', validateProductQuery, async (req, res) => {
     try {
-        const products = await Product.findAll();
-        res.json(products);
+        const result = await getProducts(req.validatedQuery);
+        return sendSuccess(res, result.items, result.meta);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return sendError(res, 500, error.message);
+    }
+});
+
+router.get('/categories', async (req, res) => {
+    try {
+        const categories = await getCategories();
+        return sendSuccess(res, categories);
+    } catch (error) {
+        return sendError(res, 500, error.message);
     }
 });
 
 // Получить один продукт
 router.get('/:id', async (req, res) => {
     try {
-        const product = await Product.findByPk(req.params.id);
+        const product = await getProductById(req.params.id);
         if (!product) {
-            return res.status(404).json({ message: 'Продукт не найден' });
+            return sendError(res, 404, 'Продукт не найден');
         }
-        res.json(product);
+        return sendSuccess(res, product);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return sendError(res, 500, error.message);
     }
 });
 
@@ -70,9 +82,12 @@ router.post('/', [auth, admin, upload.single('image')], async (req, res) => {
             stock
         });
 
-        res.status(201).json(product);
+        return res.status(201).json({
+            success: true,
+            data: product
+        });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        return sendError(res, 400, error.message);
     }
 });
 
@@ -81,7 +96,7 @@ router.put('/:id', [auth, admin, upload.single('image')], async (req, res) => {
     try {
         const product = await Product.findByPk(req.params.id);
         if (!product) {
-            return res.status(404).json({ message: 'Продукт не найден' });
+            return sendError(res, 404, 'Продукт не найден');
         }
 
         const { name, description, price, category, stock } = req.body;
@@ -96,9 +111,12 @@ router.put('/:id', [auth, admin, upload.single('image')], async (req, res) => {
             stock
         });
 
-        res.json(product);
+        return res.json({
+            success: true,
+            data: product
+        });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        return sendError(res, 400, error.message);
     }
 });
 
@@ -107,13 +125,13 @@ router.delete('/:id', [auth, admin], async (req, res) => {
     try {
         const product = await Product.findByPk(req.params.id);
         if (!product) {
-            return res.status(404).json({ message: 'Продукт не найден' });
+            return sendError(res, 404, 'Продукт не найден');
         }
 
         await product.destroy();
-        res.json({ message: 'Продукт удален' });
+        return res.json({ success: true, data: { message: 'Продукт удален' } });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return sendError(res, 500, error.message);
     }
 });
 

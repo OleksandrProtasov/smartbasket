@@ -3,6 +3,7 @@ const router = express.Router();
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
 const auth = require('../middleware/auth');
+const { sendError } = require('../utils/apiResponse');
 
 // Получить корзину пользователя
 router.get('/', auth, async (req, res) => {
@@ -14,9 +15,9 @@ router.get('/', auth, async (req, res) => {
                 attributes: ['id', 'name', 'price', 'image']
             }]
         });
-        res.json(cartItems);
+        res.json({ success: true, data: cartItems });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return sendError(res, 500, error.message);
     }
 });
 
@@ -28,12 +29,12 @@ router.post('/', auth, async (req, res) => {
         // Проверка существования товара
         const product = await Product.findByPk(productId);
         if (!product) {
-            return res.status(404).json({ message: 'Товар не найден' });
+            return sendError(res, 404, 'Товар не найден');
         }
 
         // Проверка наличия товара
         if (product.stock < quantity) {
-            return res.status(400).json({ message: 'Недостаточно товара на складе' });
+            return sendError(res, 400, 'Недостаточно товара на складе');
         }
 
         // Проверка существования товара в корзине
@@ -48,7 +49,7 @@ router.post('/', auth, async (req, res) => {
             // Обновляем количество
             existingCartItem.quantity += quantity;
             await existingCartItem.save();
-            return res.json(existingCartItem);
+            return res.json({ success: true, data: existingCartItem });
         }
 
         // Создаем новую запись в корзине
@@ -58,9 +59,9 @@ router.post('/', auth, async (req, res) => {
             quantity
         });
 
-        res.status(201).json(cartItem);
+        return res.status(201).json({ success: true, data: cartItem });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return sendError(res, 500, error.message);
     }
 });
 
@@ -77,20 +78,20 @@ router.put('/:id', auth, async (req, res) => {
         });
 
         if (!cartItem) {
-            return res.status(404).json({ message: 'Товар в корзине не найден' });
+            return sendError(res, 404, 'Товар в корзине не найден');
         }
 
         // Проверка наличия товара
         if (cartItem.Product.stock < quantity) {
-            return res.status(400).json({ message: 'Недостаточно товара на складе' });
+            return sendError(res, 400, 'Недостаточно товара на складе');
         }
 
         cartItem.quantity = quantity;
         await cartItem.save();
 
-        res.json(cartItem);
+        return res.json({ success: true, data: cartItem });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return sendError(res, 500, error.message);
     }
 });
 
@@ -105,13 +106,13 @@ router.delete('/:id', auth, async (req, res) => {
         });
 
         if (!cartItem) {
-            return res.status(404).json({ message: 'Товар в корзине не найден' });
+            return sendError(res, 404, 'Товар в корзине не найден');
         }
 
         await cartItem.destroy();
-        res.json({ message: 'Товар удален из корзины' });
+        return res.json({ success: true, data: { message: 'Товар удален из корзины' } });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return sendError(res, 500, error.message);
     }
 });
 

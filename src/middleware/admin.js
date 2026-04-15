@@ -1,8 +1,10 @@
+const { sendError } = require('../utils/apiResponse');
+
 const admin = (req, res, next) => {
     if (req.user && req.user.role === 'admin') {
         next();
     } else {
-        res.status(403).json({ message: 'Доступ запрещен. Требуются права администратора' });
+        return sendError(res, 403, 'Доступ запрещен. Требуются права администратора');
     }
 };
 

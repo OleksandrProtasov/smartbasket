@@ -3,16 +3,18 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
+const { validateAuthBody } = require('../middleware/validate');
+const { sendError, sendSuccess } = require('../utils/apiResponse');
 
 // Регистрация
-router.post('/register', async (req, res) => {
+router.post('/register', validateAuthBody, async (req, res) => {
     try {
         const { email, password, name } = req.body;
 
         // Проверка существования пользователя
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
-            return res.status(400).json({ message: 'Пользователь с таким email уже существует' });
+            return sendError(res, 400, 'Пользователь с таким email уже существует');
         }
 
         // Создание нового пользователя
@@ -29,35 +31,38 @@ router.post('/register', async (req, res) => {
             { expiresIn: '24h' }
         );
 
-        res.status(201).json({
-            token,
-            user: {
-                id: user.id,
-                email: user.email,
-                name: user.name,
-                role: user.role
+        return res.status(201).json({
+            success: true,
+            data: {
+                token,
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    role: user.role
+                }
             }
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return sendError(res, 500, error.message);
     }
 });
 
 // Вход
-router.post('/login', async (req, res) => {
+router.post('/login', validateAuthBody, async (req, res) => {
     try {
         const { email, password } = req.body;
 
         // Поиск пользователя
         const user = await User.findOne({ where: { email } });
         if (!user) {
-            return res.status(401).json({ message: 'Неверный email или пароль' });
+            return sendError(res, 401, 'Неверный email или пароль');
         }
 
         // Проверка пароля
         const isValidPassword = await user.comparePassword(password);
         if (!isValidPassword) {
-            return res.status(401).json({ message: 'Неверный email или пароль' });
+            return sendError(res, 401, 'Неверный email или пароль');
         }
 
         // Создание токена
@@ -67,7 +72,7 @@ router.post('/login', async (req, res) => {
             { expiresIn: '24h' }
         );
 
-        res.json({
+        return sendSuccess(res, {
             token,
             user: {
                 id: user.id,
@@ -77,7 +82,7 @@ router.post('/login', async (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return sendError(res, 500, error.message);
     }
 });
 
@@ -87,9 +92,9 @@ router.get('/me', auth, async (req, res) => {
         const user = await User.findByPk(req.user.id, {
             attributes: ['id', 'email', 'name', 'role']
         });
-        res.json(user);
+        return sendSuccess(res, user);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return sendError(res, 500, error.message);
     }
 });
 
