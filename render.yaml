@@ -1,0 +1,44 @@
+databases:
+  - name: smartbasket-db
+    databaseName: smartbasket
+    user: smartbasket
+    plan: free
+
+services:
+  - type: web
+    name: smartbasket-api
+    runtime: node
+    plan: free
+    rootDir: .
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SKIP_DB
+        value: "false"
+      - key: DB_HOST
+        fromDatabase:
+          name: smartbasket-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: smartbasket-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: smartbasket-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: smartbasket-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: smartbasket-db
+          property: password

@@ -79,6 +79,22 @@ Frontend настроен на статический экспорт и авто
 GitHub Pages не запускает Node.js API, поэтому backend нужно деплоить на отдельный хост (Render/Railway/Fly.io).
 После деплоя backend укажите его URL в `NEXT_PUBLIC_API_URL` для frontend workflow.
 
+### Render (рекомендуемый для backend)
+
+В репозитории добавлен `render.yaml`, поэтому можно сделать deploy как Blueprint:
+
+1. Откройте [Render Dashboard](https://dashboard.render.com/) -> `New` -> `Blueprint`.
+2. Выберите репозиторий `smartbasket`.
+3. Render автоматически создаст:
+   - PostgreSQL: `smartbasket-db`
+   - Web Service: `smartbasket-api`
+4. Дождитесь статуса `Live`.
+5. Возьмите URL сервиса вида `https://smartbasket-api.onrender.com`.
+6. В GitHub Variables установите:
+   - `NEXT_PUBLIC_API_URL=https://smartbasket-api.onrender.com/api`
+
+После следующего push в `master` GitHub Pages frontend будет работать с Render backend.
+
 ## Тесты
 
 Backend API:
