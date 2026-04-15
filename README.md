@@ -1,120 +1,74 @@
 # SmartBasket Mini Shop
+Modern e-commerce app with a Next.js storefront, Express API, product aggregation, and GitHub Pages + Render deployment flow.
 
-Современный мини интернет-магазин с backend на Express/PostgreSQL и frontend на Next.js.
+Live demo: https://oleksandrprotasov.github.io/smartbasket/
 
-## Стек
+## What is inside
+- Product catalog with search, category filters, sorting, and pagination.
+- Product details page with recommendations.
+- Cart with quantity editing, coupons, and shipping threshold logic.
+- Wishlist, recent views, and product comparison mode.
+- Auth flows (register/login) and demo checkout.
+- Unified API response format with backend validation.
+- Responsive UI with orange-accent design and EUR pricing.
 
-- Backend: Node.js, Express, Sequelize, PostgreSQL, JWT
-- Frontend: Next.js (App Router), TypeScript, Tailwind CSS
-- Данные каталога: DummyJSON Products API + локальный fallback
-- Состояние клиента: React Query + Zustand
+## Stack
+- Frontend: Next.js (App Router), TypeScript, Tailwind CSS.
+- State/Data: Zustand, React Query.
+- Backend: Node.js, Express, Sequelize, PostgreSQL.
+- External catalog source: DummyJSON API with local DB fallback.
+- Deployment: GitHub Pages (frontend static export) + Render (backend + PostgreSQL).
 
-## Основные возможности
-
-- Каталог товаров с поиском, фильтрацией, сортировкой и пагинацией
-- Карточка товара с рекомендациями
-- Корзина с купонами и расчетом доставки
-- Wishlist и недавние просмотры
-- Регистрация/вход и demo checkout
-- Единый формат API-ответов и валидация query/body
-
-## Установка
-
-1) Установить зависимости backend:
+## Local setup
+Install backend dependencies:
 
 ```bash
 npm install
 ```
 
-2) Установить зависимости frontend:
+Install frontend dependencies:
 
 ```bash
 cd frontend
 npm install
 ```
 
-3) Создать `.env` из `.env.example` в корне проекта.
+Create environment files:
+- Root: copy `.env.example` to `.env`
+- Frontend: copy `frontend/.env.example` to `frontend/.env.local`
 
-4) Создать БД:
-
-```sql
-CREATE DATABASE smartbasket;
-```
-
-## Запуск
-
-Backend:
+Run backend:
 
 ```bash
 npm run dev
 ```
 
-Frontend (в отдельном терминале):
+Run frontend:
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-Доступ:
-
+Local URLs:
 - API: `http://localhost:5000`
 - Web: `http://localhost:3000`
 
-## Deploy
+## Scripts
+Backend:
+- `npm run dev` - run backend in development mode
+- `npm start` - run backend in production mode
+- `npm test` - run backend tests
 
-### GitHub Pages (frontend)
+Frontend:
+- `cd frontend && npm run dev` - run Next.js dev server
+- `cd frontend && npm run build` - create static production build (`frontend/out`)
+- `cd frontend && npm run smoke` - run production build smoke check
 
-Frontend настроен на статический экспорт и автодеплой через GitHub Actions:
-
-- Workflow: `.github/workflows/deploy-frontend-gh-pages.yml`
-- В `Settings -> Pages` выберите `GitHub Actions`
-- В `Settings -> Secrets and variables -> Actions -> Variables` добавьте:
-  - `NEXT_PUBLIC_API_URL=https://<your-backend-domain>/api`
-
-После push в `master` сайт публикуется на GitHub Pages.
-
-### Backend (обязательно отдельно)
-
-GitHub Pages не запускает Node.js API, поэтому backend нужно деплоить на отдельный хост (Render/Railway/Fly.io).
-После деплоя backend укажите его URL в `NEXT_PUBLIC_API_URL` для frontend workflow.
-
-### Render (рекомендуемый для backend)
-
-В репозитории добавлен `render.yaml`, поэтому можно сделать deploy как Blueprint:
-
-1. Откройте [Render Dashboard](https://dashboard.render.com/) -> `New` -> `Blueprint`.
-2. Выберите репозиторий `smartbasket`.
-3. Render автоматически создаст:
-   - PostgreSQL: `smartbasket-db`
-   - Web Service: `smartbasket-api`
-4. Дождитесь статуса `Live`.
-5. Возьмите URL сервиса вида `https://smartbasket-api.onrender.com`.
-6. В GitHub Variables установите:
-   - `NEXT_PUBLIC_API_URL=https://smartbasket-api.onrender.com/api`
-
-После следующего push в `master` GitHub Pages frontend будет работать с Render backend.
-
-## Тесты
-
-Backend API:
-
-```bash
-npm test
-```
-
-Frontend smoke:
-
-```bash
-cd frontend
-npm run smoke
-```
-
-## Основные API маршруты
-
-- `GET /api/products` — каталог с query: `page`, `limit`, `q`, `category`, `sortBy`, `order`
-- `GET /api/products/categories` — категории
-- `GET /api/products/:id` — детальная карточка товара
-- `POST /api/auth/register` — регистрация
-- `POST /api/auth/login` — вход
-- `GET /api/cart` — корзина пользователя
+## Deployment notes
+- Frontend is configured for GitHub Pages via `.github/workflows/deploy-frontend-gh-pages.yml`.
+- In GitHub repo settings, set **Pages -> Source = GitHub Actions**.
+- Set repository variable:
+  - `NEXT_PUBLIC_API_URL=https://smartbasket-api.onrender.com/api`
+- Backend is configured for Render via `render.yaml` (Blueprint deploy).
+- Project data for wishlist/cart/recent views is persisted in browser local storage.
